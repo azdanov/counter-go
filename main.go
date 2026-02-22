@@ -8,9 +8,9 @@ import (
 
 func main() {
 	data, _ := os.ReadFile("./words.txt")
-	fmt.Println(countWords(data))
+	fmt.Println(CountWords(data))
 }
 
-func countWords(data []byte) int {
+func CountWords(data []byte) int {
 	return len(bytes.Fields(data))
 }
