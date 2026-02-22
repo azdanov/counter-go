@@ -6,10 +6,15 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, Counter!")
-
 	bytes, _ := os.ReadFile("./words.txt")
-	contents := string(bytes)
 
-	fmt.Println("file:", contents)
+	wordCount := 0
+
+	for _, b := range bytes {
+		if b == ' ' || b == '\n' {
+			wordCount++
+		}
+	}
+
+	fmt.Println(wordCount)
 }
