@@ -3,11 +3,18 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 )
 
 func main() {
-	data, _ := os.ReadFile("./words.txt")
+	log.SetFlags(0)
+
+	data, err := os.ReadFile("./words.txt")
+	if err != nil {
+		log.Fatalln("Error reading file:", err)
+	}
+
 	fmt.Println(CountWords(data))
 }
 
