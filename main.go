@@ -8,6 +8,10 @@ import (
 func main() {
 	bytes, _ := os.ReadFile("./words.txt")
 
+	fmt.Println(countWords(bytes))
+}
+
+func countWords(bytes []byte) int {
 	wordCount := 0
 
 	for _, b := range bytes {
@@ -16,5 +20,5 @@ func main() {
 		}
 	}
 
-	fmt.Println(wordCount)
+	return wordCount
 }
