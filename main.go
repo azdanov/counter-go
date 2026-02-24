@@ -11,15 +11,33 @@ import (
 func main() {
 	log.SetFlags(0)
 
-	filename := "./words.txt"
+	if len(os.Args) < 2 {
+		name := os.Args[0]
+		log.Fatalf("Usage: %s <filename1> [<filename2> ...]", name)
+	}
 
+	filenames := os.Args[1:]
+	total := 0
+
+	for _, filename := range filenames {
+		count := CountWordsInFile(filename)
+		fmt.Printf("%d %s\n", count, filename)
+		total += count
+	}
+
+	if len(filenames) > 1 {
+		fmt.Printf("%d total\n", total)
+	}
+}
+
+func CountWordsInFile(filename string) int {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatalln("Error reading file:", err)
 	}
 	defer file.Close()
 
-	fmt.Println(CountWords(file))
+	return CountWords(file)
 }
 
 func CountWords(handle io.Reader) int {
