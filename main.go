@@ -6,21 +6,30 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 func main() {
 	log.SetFlags(0)
 
+	binName := filepath.Base(os.Args[0])
+
 	if len(os.Args) < 2 {
-		name := os.Args[0]
-		log.Fatalf("Usage: %s <filename1> [<filename2> ...]", name)
+		log.Fatalf("Usage: %s <filename1> [<filename2> ...]", binName)
 	}
 
 	filenames := os.Args[1:]
 	total := 0
+	hadErr := false
 
 	for _, filename := range filenames {
-		count := CountWordsInFile(filename)
+		count, err := CountWordsInFile(filename)
+		if err != nil {
+			hadErr = true
+			fmt.Fprintf(os.Stderr, "%s: %v\n", binName, err)
+			continue
+		}
+
 		fmt.Printf("%d %s\n", count, filename)
 		total += count
 	}
@@ -28,16 +37,20 @@ func main() {
 	if len(filenames) > 1 {
 		fmt.Printf("%d total\n", total)
 	}
+
+	if hadErr {
+		os.Exit(1)
+	}
 }
 
-func CountWordsInFile(filename string) int {
+func CountWordsInFile(filename string) (int, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Fatalln("Error reading file:", err)
+		return 0, err
 	}
 	defer file.Close()
 
-	return CountWords(file)
+	return CountWords(file), nil
 }
 
 func CountWords(handle io.Reader) int {
