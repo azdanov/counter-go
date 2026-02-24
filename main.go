@@ -14,10 +14,6 @@ func main() {
 
 	binName := filepath.Base(os.Args[0])
 
-	if len(os.Args) < 2 {
-		log.Fatalf("Usage: %s <filename1> [<filename2> ...]", binName)
-	}
-
 	filenames := os.Args[1:]
 	total := 0
 	hadErr := false
@@ -32,6 +28,11 @@ func main() {
 
 		fmt.Printf("%d %s\n", count, filename)
 		total += count
+	}
+
+	if len(filenames) == 0 {
+		count := CountWords(os.Stdin)
+		fmt.Printf("%d\n", count)
 	}
 
 	if len(filenames) > 1 {
