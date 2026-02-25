@@ -17,8 +17,8 @@ func CountWordsInFile(filename string) (int, error) {
 	return CountWords(file), nil
 }
 
-func CountWords(handle io.Reader) int {
-	scanner := bufio.NewScanner(handle)
+func CountWords(r io.Reader) int {
+	scanner := bufio.NewScanner(r)
 	scanner.Split(bufio.ScanWords)
 
 	count := 0
@@ -28,6 +28,26 @@ func CountWords(handle io.Reader) int {
 
 	if err := scanner.Err(); err != nil {
 		log.Fatalln("Error scanning file:", err)
+	}
+
+	return count
+}
+
+func CountLines(r io.Reader) int {
+	reader := bufio.NewReader(r)
+
+	count := 0
+	for {
+		r, _, err := reader.ReadRune()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Fatalln("Error reading file:", err)
+		}
+		if r == '\n' {
+			count++
+		}
 	}
 
 	return count
