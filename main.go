@@ -13,7 +13,7 @@ func main() {
 	binName := filepath.Base(os.Args[0])
 
 	filenames := os.Args[1:]
-	total := 0
+	total := Counts{}
 	hadErr := false
 
 	for _, filename := range filenames {
@@ -24,17 +24,19 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("%d %d %d %s\n", counts.Lines, counts.Words, counts.Bytes, filename)
-		total += counts.Words
+		fmt.Printf("%s %s\n", counts, filename)
+		total.Lines += counts.Lines
+		total.Words += counts.Words
+		total.Bytes += counts.Bytes
 	}
 
 	if len(filenames) == 0 {
 		counts := Count(os.Stdin)
-		fmt.Printf("%d %d %d\n", counts.Lines, counts.Words, counts.Bytes)
+		fmt.Printf("%s\n", counts)
 	}
 
 	if len(filenames) > 1 {
-		fmt.Printf("%d total\n", total)
+		fmt.Printf("%s total\n", total)
 	}
 
 	if hadErr {

@@ -181,3 +181,35 @@ func TestCount(t *testing.T) {
 		})
 	}
 }
+
+func TestCounts_String(t *testing.T) {
+	tests := []struct {
+		name string
+		c    counter.Counts
+		want string
+	}{
+		{
+			name: "empty input",
+			c:    counter.Counts{Lines: 0, Words: 0, Bytes: 0},
+			want: "0 0 0",
+		},
+		{
+			name: "single line with words",
+			c:    counter.Counts{Lines: 0, Words: 2, Bytes: 11},
+			want: "0 2 11",
+		},
+		{
+			name: "multiple lines with words",
+			c:    counter.Counts{Lines: 2, Words: 6, Bytes: 35},
+			want: "2 6 35",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.c.String()
+			if got != tt.want {
+				t.Errorf("String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

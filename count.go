@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"log"
 )
@@ -10,6 +11,10 @@ type Counts struct {
 	Lines int
 	Words int
 	Bytes int
+}
+
+func (c Counts) String() string {
+	return fmt.Sprintf("%d %d %d", c.Lines, c.Words, c.Bytes)
 }
 
 func Count(f io.ReadSeeker) Counts {
