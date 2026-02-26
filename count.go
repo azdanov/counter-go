@@ -4,17 +4,26 @@ import (
 	"bufio"
 	"io"
 	"log"
-	"os"
 )
 
-func CountWordsInFile(filename string) (int, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return 0, err
-	}
-	defer file.Close()
+type Counts struct {
+	Lines int
+	Words int
+	Bytes int
+}
 
-	return CountWords(file), nil
+func Count(f io.ReadSeeker) Counts {
+	lines := CountLines(f)
+	f.Seek(0, io.SeekStart)
+	words := CountWords(f)
+	f.Seek(0, io.SeekStart)
+	bytes := CountBytes(f)
+
+	return Counts{
+		Lines: lines,
+		Words: words,
+		Bytes: bytes,
+	}
 }
 
 func CountWords(r io.Reader) int {
