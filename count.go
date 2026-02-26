@@ -52,3 +52,11 @@ func CountLines(r io.Reader) int {
 
 	return count
 }
+
+func CountBytes(r io.Reader) int {
+	count, err := io.Copy(io.Discard, r)
+	if err != nil {
+		log.Fatalln("Error counting bytes:", err)
+	}
+	return int(count)
+}

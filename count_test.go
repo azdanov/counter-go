@@ -102,3 +102,45 @@ func TestCountLines(t *testing.T) {
 		})
 	}
 }
+
+func TestCountBytes(t *testing.T) {
+	tests := []struct {
+		name string
+		r    io.Reader
+		want int
+	}{
+		{
+			name: "empty input",
+			r:    strings.NewReader(""),
+			want: 0,
+		},
+		{
+			name: "single character",
+			r:    strings.NewReader("a"),
+			want: 1,
+		},
+		{
+			name: "multiple characters",
+			r:    strings.NewReader("hello world"),
+			want: 11,
+		},
+		{
+			name: "string with newlines",
+			r:    strings.NewReader("hello world\nhello world\nhello world"),
+			want: 35,
+		},
+		{
+			name: "string with unicode characters",
+			r:    strings.NewReader("привет мир"),
+			want: 19, // 18 bytes for the characters + 1 byte for the space
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := counter.CountBytes(tt.r)
+			if got != tt.want {
+				t.Errorf("CountBytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
