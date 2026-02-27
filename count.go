@@ -13,6 +13,14 @@ type Counts struct {
 	Bytes int
 }
 
+func (c Counts) Add(o Counts) Counts {
+	return Counts{
+		Lines: c.Lines + o.Lines,
+		Words: c.Words + o.Words,
+		Bytes: c.Bytes + o.Bytes,
+	}
+}
+
 func (c Counts) String() string {
 	return fmt.Sprintf("%d %d %d", c.Lines, c.Words, c.Bytes)
 }

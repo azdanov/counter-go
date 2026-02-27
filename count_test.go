@@ -213,3 +213,39 @@ func TestCounts_String(t *testing.T) {
 		})
 	}
 }
+
+func TestCounts_Add(t *testing.T) {
+	tests := []struct {
+		name string
+		c    counter.Counts
+		o    counter.Counts
+		want counter.Counts
+	}{
+		{
+			name: "add empty counts",
+			c:    counter.Counts{Lines: 0, Words: 0, Bytes: 0},
+			o:    counter.Counts{Lines: 0, Words: 0, Bytes: 0},
+			want: counter.Counts{Lines: 0, Words: 0, Bytes: 0},
+		},
+		{
+			name: "add counts with zero values",
+			c:    counter.Counts{Lines: 1, Words: 2, Bytes: 3},
+			o:    counter.Counts{Lines: 0, Words: 0, Bytes: 0},
+			want: counter.Counts{Lines: 1, Words: 2, Bytes: 3},
+		},
+		{
+			name: "add counts with values",
+			c:    counter.Counts{Lines: 1, Words: 2, Bytes: 3},
+			o:    counter.Counts{Lines: 4, Words: 5, Bytes: 6},
+			want: counter.Counts{Lines: 5, Words: 7, Bytes: 9},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.c.Add(tt.o)
+			if got != tt.want {
+				t.Errorf("Add() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

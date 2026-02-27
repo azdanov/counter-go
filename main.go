@@ -25,9 +25,7 @@ func main() {
 		}
 
 		fmt.Printf("%s %s\n", counts, filename)
-		total.Lines += counts.Lines
-		total.Words += counts.Words
-		total.Bytes += counts.Bytes
+		total = total.Add(counts)
 	}
 
 	if len(filenames) == 0 {
