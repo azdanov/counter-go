@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"log"
 )
@@ -19,10 +18,6 @@ func (c Counts) Add(o Counts) Counts {
 		Words: c.Words + o.Words,
 		Bytes: c.Bytes + o.Bytes,
 	}
-}
-
-func (c Counts) String() string {
-	return fmt.Sprintf("%d %d %d", c.Lines, c.Words, c.Bytes)
 }
 
 func Count(f io.ReadSeeker) Counts {
