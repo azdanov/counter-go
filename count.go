@@ -39,22 +39,6 @@ func Count(f io.ReadSeeker) Counts {
 	}
 }
 
-func CountWords(r io.Reader) int {
-	scanner := bufio.NewScanner(r)
-	scanner.Split(bufio.ScanWords)
-
-	count := 0
-	for scanner.Scan() {
-		count++
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatalln("Error scanning file:", err)
-	}
-
-	return count
-}
-
 func CountLines(r io.Reader) int {
 	reader := bufio.NewReader(r)
 
@@ -70,6 +54,22 @@ func CountLines(r io.Reader) int {
 		if r == '\n' {
 			count++
 		}
+	}
+
+	return count
+}
+
+func CountWords(r io.Reader) int {
+	scanner := bufio.NewScanner(r)
+	scanner.Split(bufio.ScanWords)
+
+	count := 0
+	for scanner.Scan() {
+		count++
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatalln("Error scanning file:", err)
 	}
 
 	return count
