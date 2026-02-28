@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"text/tabwriter"
 )
 
 type DisplayOptions struct {
@@ -42,6 +43,8 @@ func main() {
 
 	log.SetFlags(0)
 
+	tw := tabwriter.NewWriter(os.Stdout, 0, 8, 1, ' ', tabwriter.AlignRight)
+
 	binName := filepath.Base(os.Args[0])
 	filenames := flag.Args()
 	total := Counts{}
@@ -51,23 +54,24 @@ func main() {
 		counts, err := HandleFileCount(filename)
 		if err != nil {
 			hadErr = true
-			fmt.Fprintf(os.Stderr, "%s: %v\n", binName, err)
+			fmt.Fprintf(tw, "%s: %v\n", binName, err)
 			continue
 		}
 
-		Print(os.Stdout, counts, opts, filename)
+		Print(tw, counts, opts, filename)
 		total = total.Add(counts)
 	}
 
 	if len(filenames) == 0 {
 		counts := Count(os.Stdin)
-		Print(os.Stdout, counts, opts)
+		Print(tw, counts, opts)
 	}
 
 	if len(filenames) > 1 {
-		Print(os.Stdout, total, opts, "total")
+		Print(tw, total, opts, "total")
 	}
 
+	tw.Flush()
 	if hadErr {
 		os.Exit(1)
 	}
@@ -94,7 +98,14 @@ func Print(w io.Writer, c Counts, opts DisplayOptions, suffix ...string) {
 	if opts.ShouldShowBytes() {
 		s = append(s, strconv.Itoa(c.Bytes))
 	}
-	s = append(s, suffix...)
 
-	fmt.Fprintln(w, strings.Join(s, " "))
+	stats := strings.Join(s, "\t") + "\t"
+	fmt.Fprintf(w, "%s", stats)
+
+	suffixes := strings.Join(suffix, " ")
+	if suffixes != "" {
+		fmt.Fprintf(w, " %s", suffixes)
+	}
+
+	fmt.Fprintln(w)
 }

@@ -28,7 +28,7 @@ func TestPrint(t *testing.T) {
 				ShowBytes: false,
 			},
 			suffix: []string{"file.txt"},
-			want:   "10 20 30 file.txt\n",
+			want:   "10\t20\t30\t file.txt\n",
 		},
 		{
 			name: "show only lines and words without suffix",
@@ -43,7 +43,7 @@ func TestPrint(t *testing.T) {
 				ShowBytes: false,
 			},
 			suffix: []string{},
-			want:   "5 15\n",
+			want:   "5\t15\t\n",
 		},
 		{
 			name: "show only bytes with suffix",
@@ -58,7 +58,7 @@ func TestPrint(t *testing.T) {
 				ShowBytes: true,
 			},
 			suffix: []string{"data.bin"},
-			want:   "9 data.bin\n",
+			want:   "9\t data.bin\n",
 		},
 	}
 	for _, tt := range tests {
