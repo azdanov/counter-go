@@ -1,28 +1,29 @@
-package main_test
+package display_test
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/azdanov/counter-go"
+	"github.com/azdanov/counter-go/display"
+	"github.com/azdanov/counter-go/stats"
 )
 
 func TestPrint(t *testing.T) {
 	tests := []struct {
 		name   string
-		c      main.Counts
-		opts   main.DisplayOptions
+		c      stats.Counts
+		opts   display.Options
 		suffix []string
 		want   string
 	}{
 		{
 			name: "show all counts with suffix",
-			c: main.Counts{
+			c: stats.Counts{
 				Lines: 10,
 				Words: 20,
 				Bytes: 30,
 			},
-			opts: main.DisplayOptions{
+			opts: display.Options{
 				ShowLines: false,
 				ShowWords: false,
 				ShowBytes: false,
@@ -32,12 +33,12 @@ func TestPrint(t *testing.T) {
 		},
 		{
 			name: "show only lines and words without suffix",
-			c: main.Counts{
+			c: stats.Counts{
 				Lines: 5,
 				Words: 15,
 				Bytes: 25,
 			},
-			opts: main.DisplayOptions{
+			opts: display.Options{
 				ShowLines: true,
 				ShowWords: true,
 				ShowBytes: false,
@@ -47,12 +48,12 @@ func TestPrint(t *testing.T) {
 		},
 		{
 			name: "show only bytes with suffix",
-			c: main.Counts{
+			c: stats.Counts{
 				Lines: 3,
 				Words: 6,
 				Bytes: 9,
 			},
-			opts: main.DisplayOptions{
+			opts: display.Options{
 				ShowLines: false,
 				ShowWords: false,
 				ShowBytes: true,
@@ -64,7 +65,7 @@ func TestPrint(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := bytes.NewBuffer(nil)
-			main.Print(w, tt.c, tt.opts, tt.suffix...)
+			display.Print(w, tt.c, tt.opts, tt.suffix...)
 			if got := w.String(); got != tt.want {
 				t.Errorf("Print() = %v, want %v", got, tt.want)
 			}
@@ -75,12 +76,12 @@ func TestPrint(t *testing.T) {
 func TestPrintHeaders(t *testing.T) {
 	tests := []struct {
 		name string
-		opts main.DisplayOptions
+		opts display.Options
 		want string
 	}{
 		{
 			name: "show all headers",
-			opts: main.DisplayOptions{
+			opts: display.Options{
 				ShowLines:  true,
 				ShowWords:  true,
 				ShowBytes:  true,
@@ -90,7 +91,7 @@ func TestPrintHeaders(t *testing.T) {
 		},
 		{
 			name: "show only lines and words headers",
-			opts: main.DisplayOptions{
+			opts: display.Options{
 				ShowLines:  true,
 				ShowWords:  true,
 				ShowBytes:  false,
@@ -100,7 +101,7 @@ func TestPrintHeaders(t *testing.T) {
 		},
 		{
 			name: "show only bytes header",
-			opts: main.DisplayOptions{
+			opts: display.Options{
 				ShowLines:  false,
 				ShowWords:  false,
 				ShowBytes:  true,
@@ -110,7 +111,7 @@ func TestPrintHeaders(t *testing.T) {
 		},
 		{
 			name: "do not show headers",
-			opts: main.DisplayOptions{
+			opts: display.Options{
 				ShowLines:  true,
 				ShowWords:  true,
 				ShowBytes:  true,
@@ -122,7 +123,7 @@ func TestPrintHeaders(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := bytes.NewBuffer(nil)
-			main.PrintHeaders(w, tt.opts)
+			display.PrintHeaders(w, tt.opts)
 			if got := w.String(); got != tt.want {
 				t.Errorf("PrintHeaders() = %v, want %v", got, tt.want)
 			}

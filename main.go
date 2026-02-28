@@ -3,44 +3,21 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
 	"text/tabwriter"
+
+	"github.com/azdanov/counter-go/display"
+	"github.com/azdanov/counter-go/stats"
 )
 
-type DisplayOptions struct {
-	ShowHeader bool
-	ShowLines  bool
-	ShowWords  bool
-	ShowBytes  bool
-}
-
-func (d DisplayOptions) IsEmpty() bool {
-	return !d.ShowLines && !d.ShowWords && !d.ShowBytes
-}
-
-func (d DisplayOptions) ShouldShowLines() bool {
-	return d.ShowLines || d.IsEmpty()
-}
-
-func (d DisplayOptions) ShouldShowWords() bool {
-	return d.ShowWords || d.IsEmpty()
-}
-
-func (d DisplayOptions) ShouldShowBytes() bool {
-	return d.ShowBytes || d.IsEmpty()
-}
-
 func main() {
-	opts := DisplayOptions{}
-	flag.BoolVar(&opts.ShowHeader, "headers", false, "Show header for each column")
-	flag.BoolVar(&opts.ShowLines, "l", false, "Show line count")
-	flag.BoolVar(&opts.ShowWords, "w", false, "Show word count")
-	flag.BoolVar(&opts.ShowBytes, "c", false, "Show byte count")
+	do := display.Options{}
+	flag.BoolVar(&do.ShowHeader, "headers", false, "Show header for each column")
+	flag.BoolVar(&do.ShowLines, "l", false, "Show line count")
+	flag.BoolVar(&do.ShowWords, "w", false, "Show word count")
+	flag.BoolVar(&do.ShowBytes, "c", false, "Show byte count")
 	flag.Parse()
 
 	log.SetFlags(0)
@@ -49,10 +26,10 @@ func main() {
 
 	binName := filepath.Base(os.Args[0])
 	filenames := flag.Args()
-	total := Counts{}
+	total := stats.Counts{}
 	hadErr := false
 
-	PrintHeaders(tw, opts)
+	display.PrintHeaders(tw, do)
 
 	for _, filename := range filenames {
 		counts, err := HandleFileCount(filename)
@@ -62,17 +39,17 @@ func main() {
 			continue
 		}
 
-		Print(tw, counts, opts, filename)
+		display.Print(tw, counts, do, filename)
 		total = total.Add(counts)
 	}
 
 	if len(filenames) == 0 {
-		counts := Count(os.Stdin)
-		Print(tw, counts, opts)
+		counts := stats.Count(os.Stdin)
+		display.Print(tw, counts, do)
 	}
 
 	if len(filenames) > 1 {
-		Print(tw, total, opts, "total")
+		display.Print(tw, total, do, "total")
 	}
 
 	tw.Flush()
@@ -81,55 +58,12 @@ func main() {
 	}
 }
 
-func HandleFileCount(filename string) (Counts, error) {
+func HandleFileCount(filename string) (stats.Counts, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return Counts{}, err
+		return stats.Counts{}, err
 	}
 	defer file.Close()
 
-	return Count(file), nil
-}
-
-func PrintHeaders(w io.Writer, opts DisplayOptions) {
-	if !opts.ShowHeader {
-		return
-	}
-
-	h := []string{}
-	if opts.ShouldShowLines() {
-		h = append(h, "lines")
-	}
-	if opts.ShouldShowWords() {
-		h = append(h, "words")
-	}
-	if opts.ShouldShowBytes() {
-		h = append(h, "bytes")
-	}
-
-	headers := strings.Join(h, "\t") + "\t"
-	fmt.Fprintln(w, headers)
-}
-
-func Print(w io.Writer, c Counts, opts DisplayOptions, suffix ...string) {
-	s := []string{}
-	if opts.ShouldShowLines() {
-		s = append(s, strconv.Itoa(c.Lines))
-	}
-	if opts.ShouldShowWords() {
-		s = append(s, strconv.Itoa(c.Words))
-	}
-	if opts.ShouldShowBytes() {
-		s = append(s, strconv.Itoa(c.Bytes))
-	}
-
-	stats := strings.Join(s, "\t") + "\t"
-	fmt.Fprintf(w, "%s", stats)
-
-	suffixes := strings.Join(suffix, " ")
-	if suffixes != "" {
-		fmt.Fprintf(w, " %s", suffixes)
-	}
-
-	fmt.Fprintln(w)
+	return stats.Count(file), nil
 }
