@@ -10,41 +10,51 @@ import (
 )
 
 type Options struct {
-	ShowHeader bool
-	ShowLines  bool
-	ShowWords  bool
-	ShowBytes  bool
+	opts NewOptionsArgs
+}
+
+type NewOptionsArgs struct {
+	ShowHeaders bool
+	ShowLines   bool
+	ShowWords   bool
+	ShowBytes   bool
+}
+
+func NewOptions(args NewOptionsArgs) Options {
+	return Options{
+		opts: args,
+	}
 }
 
 func (d Options) IsEmpty() bool {
-	return !d.ShowLines && !d.ShowWords && !d.ShowBytes
+	return !d.opts.ShowLines && !d.opts.ShowWords && !d.opts.ShowBytes
 }
 
 func (d Options) ShouldShowLines() bool {
-	return d.ShowLines || d.IsEmpty()
+	return d.opts.ShowLines || d.IsEmpty()
 }
 
 func (d Options) ShouldShowWords() bool {
-	return d.ShowWords || d.IsEmpty()
+	return d.opts.ShowWords || d.IsEmpty()
 }
 
 func (d Options) ShouldShowBytes() bool {
-	return d.ShowBytes || d.IsEmpty()
+	return d.opts.ShowBytes || d.IsEmpty()
 }
 
-func PrintHeaders(w io.Writer, opts Options) {
-	if !opts.ShowHeader {
+func PrintHeaders(w io.Writer, d Options) {
+	if !d.opts.ShowHeaders {
 		return
 	}
 
 	h := []string{}
-	if opts.ShouldShowLines() {
+	if d.ShouldShowLines() {
 		h = append(h, "lines")
 	}
-	if opts.ShouldShowWords() {
+	if d.ShouldShowWords() {
 		h = append(h, "words")
 	}
-	if opts.ShouldShowBytes() {
+	if d.ShouldShowBytes() {
 		h = append(h, "bytes")
 	}
 

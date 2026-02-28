@@ -23,11 +23,13 @@ func TestPrint(t *testing.T) {
 				Words: 20,
 				Bytes: 30,
 			},
-			opts: display.Options{
-				ShowLines: false,
-				ShowWords: false,
-				ShowBytes: false,
-			},
+			opts: display.NewOptions(
+				display.NewOptionsArgs{
+					ShowLines: false,
+					ShowWords: false,
+					ShowBytes: false,
+				},
+			),
 			suffix: []string{"file.txt"},
 			want:   "10\t20\t30\t file.txt\n",
 		},
@@ -38,11 +40,13 @@ func TestPrint(t *testing.T) {
 				Words: 15,
 				Bytes: 25,
 			},
-			opts: display.Options{
-				ShowLines: true,
-				ShowWords: true,
-				ShowBytes: false,
-			},
+			opts: display.NewOptions(
+				display.NewOptionsArgs{
+					ShowLines: true,
+					ShowWords: true,
+					ShowBytes: false,
+				},
+			),
 			suffix: []string{},
 			want:   "5\t15\t\n",
 		},
@@ -53,11 +57,13 @@ func TestPrint(t *testing.T) {
 				Words: 6,
 				Bytes: 9,
 			},
-			opts: display.Options{
-				ShowLines: false,
-				ShowWords: false,
-				ShowBytes: true,
-			},
+			opts: display.NewOptions(
+				display.NewOptionsArgs{
+					ShowLines: false,
+					ShowWords: false,
+					ShowBytes: true,
+				},
+			),
 			suffix: []string{"data.bin"},
 			want:   "9\t data.bin\n",
 		},
@@ -81,42 +87,50 @@ func TestPrintHeaders(t *testing.T) {
 	}{
 		{
 			name: "show all headers",
-			opts: display.Options{
-				ShowLines:  true,
-				ShowWords:  true,
-				ShowBytes:  true,
-				ShowHeader: true,
-			},
+			opts: display.NewOptions(
+				display.NewOptionsArgs{
+					ShowLines:   true,
+					ShowWords:   true,
+					ShowBytes:   true,
+					ShowHeaders: true,
+				},
+			),
 			want: "lines\twords\tbytes\t\n",
 		},
 		{
 			name: "show only lines and words headers",
-			opts: display.Options{
-				ShowLines:  true,
-				ShowWords:  true,
-				ShowBytes:  false,
-				ShowHeader: true,
-			},
+			opts: display.NewOptions(
+				display.NewOptionsArgs{
+					ShowLines:   true,
+					ShowWords:   true,
+					ShowBytes:   false,
+					ShowHeaders: true,
+				},
+			),
 			want: "lines\twords\t\n",
 		},
 		{
 			name: "show only bytes header",
-			opts: display.Options{
-				ShowLines:  false,
-				ShowWords:  false,
-				ShowBytes:  true,
-				ShowHeader: true,
-			},
+			opts: display.NewOptions(
+				display.NewOptionsArgs{
+					ShowLines:   false,
+					ShowWords:   false,
+					ShowBytes:   true,
+					ShowHeaders: true,
+				},
+			),
 			want: "bytes\t\n",
 		},
 		{
 			name: "do not show headers",
-			opts: display.Options{
-				ShowLines:  true,
-				ShowWords:  true,
-				ShowBytes:  true,
-				ShowHeader: false,
-			},
+			opts: display.NewOptions(
+				display.NewOptionsArgs{
+					ShowLines:   true,
+					ShowWords:   true,
+					ShowBytes:   true,
+					ShowHeaders: false,
+				},
+			),
 			want: "",
 		},
 	}

@@ -13,12 +13,13 @@ import (
 )
 
 func main() {
-	do := display.Options{}
-	flag.BoolVar(&do.ShowHeader, "headers", false, "Show header for each column")
-	flag.BoolVar(&do.ShowLines, "l", false, "Show line count")
-	flag.BoolVar(&do.ShowWords, "w", false, "Show word count")
-	flag.BoolVar(&do.ShowBytes, "c", false, "Show byte count")
+	args := display.NewOptionsArgs{}
+	flag.BoolVar(&args.ShowHeaders, "headers", false, "Show header for each column")
+	flag.BoolVar(&args.ShowLines, "l", false, "Show line count")
+	flag.BoolVar(&args.ShowWords, "w", false, "Show word count")
+	flag.BoolVar(&args.ShowBytes, "c", false, "Show byte count")
 	flag.Parse()
+	do := display.NewOptions(args)
 
 	log.SetFlags(0)
 
