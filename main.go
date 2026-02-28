@@ -13,8 +13,13 @@ import (
 	"github.com/azdanov/counter-go/stats"
 )
 
+type FileCount struct {
+	counts   stats.Counts
+	filename string
+}
+
 func main() {
-	m := sync.Mutex{}
+	ch := make(chan FileCount)
 	wg := sync.WaitGroup{}
 
 	args := display.NewOptionsArgs{}
@@ -44,14 +49,19 @@ func main() {
 				fmt.Fprintf(os.Stderr, "%s: %v\n", binName, err)
 				return
 			}
-
-			m.Lock()
-			defer m.Unlock()
-			display.Print(tw, counts, do, filename)
-			total = total.Add(counts)
+			ch <- FileCount{counts: counts, filename: filename}
 		})
 	}
-	wg.Wait()
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	for fc := range ch {
+		display.Print(tw, fc.counts, do, fc.filename)
+		total = total.Add(fc.counts)
+	}
 
 	if len(filenames) == 0 {
 		counts := stats.Count(os.Stdin)
