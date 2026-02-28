@@ -41,7 +41,7 @@ func main() {
 			counts, err := HandleFileCount(filename)
 			if err != nil {
 				hadErr = true
-				fmt.Fprintf(tw, "%s: %v\n", binName, err)
+				fmt.Fprintf(os.Stderr, "%s: %v\n", binName, err)
 				return
 			}
 
