@@ -13,15 +13,13 @@ import (
 	"github.com/azdanov/counter-go/stats"
 )
 
-type FileCount struct {
+type FileCounts struct {
 	counts   stats.Counts
 	filename string
+	err      error
 }
 
 func main() {
-	ch := make(chan FileCount)
-	wg := sync.WaitGroup{}
-
 	args := display.NewOptionsArgs{}
 	flag.BoolVar(&args.ShowHeaders, "headers", false, "Show header for each column")
 	flag.BoolVar(&args.ShowLines, "l", false, "Show line count")
@@ -41,24 +39,13 @@ func main() {
 
 	display.PrintHeaders(tw, do)
 
-	for _, filename := range filenames {
-		wg.Go(func() {
-			counts, err := HandleFileCount(filename)
-			if err != nil {
-				hadErr = true
-				fmt.Fprintf(os.Stderr, "%s: %v\n", binName, err)
-				return
-			}
-			ch <- FileCount{counts: counts, filename: filename}
-		})
-	}
-
-	go func() {
-		wg.Wait()
-		close(ch)
-	}()
-
+	ch := CountFiles(filenames)
 	for fc := range ch {
+		if fc.err != nil {
+			fmt.Fprintf(os.Stderr, "%s: %v\n", binName, fc.err)
+			hadErr = true
+			continue
+		}
 		display.Print(tw, fc.counts, do, fc.filename)
 		total = total.Add(fc.counts)
 	}
@@ -76,6 +63,29 @@ func main() {
 	if hadErr {
 		os.Exit(1)
 	}
+}
+
+func CountFiles(filenames []string) <-chan FileCounts {
+	ch := make(chan FileCounts)
+	wg := sync.WaitGroup{}
+
+	for _, filename := range filenames {
+		wg.Go(func() {
+			counts, err := HandleFileCount(filename)
+			if err != nil {
+				ch <- FileCounts{err: err, filename: filename}
+				return
+			}
+			ch <- FileCounts{counts: counts, filename: filename}
+		})
+	}
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	return ch
 }
 
 func HandleFileCount(filename string) (stats.Counts, error) {
