@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 	"text/tabwriter"
 
 	"github.com/azdanov/counter-go/display"
@@ -13,6 +14,9 @@ import (
 )
 
 func main() {
+	m := sync.Mutex{}
+	wg := sync.WaitGroup{}
+
 	args := display.NewOptionsArgs{}
 	flag.BoolVar(&args.ShowHeaders, "headers", false, "Show header for each column")
 	flag.BoolVar(&args.ShowLines, "l", false, "Show line count")
@@ -33,16 +37,21 @@ func main() {
 	display.PrintHeaders(tw, do)
 
 	for _, filename := range filenames {
-		counts, err := HandleFileCount(filename)
-		if err != nil {
-			hadErr = true
-			fmt.Fprintf(tw, "%s: %v\n", binName, err)
-			continue
-		}
+		wg.Go(func() {
+			counts, err := HandleFileCount(filename)
+			if err != nil {
+				hadErr = true
+				fmt.Fprintf(tw, "%s: %v\n", binName, err)
+				return
+			}
 
-		display.Print(tw, counts, do, filename)
-		total = total.Add(counts)
+			m.Lock()
+			defer m.Unlock()
+			display.Print(tw, counts, do, filename)
+			total = total.Add(counts)
+		})
 	}
+	wg.Wait()
 
 	if len(filenames) == 0 {
 		counts := stats.Count(os.Stdin)
