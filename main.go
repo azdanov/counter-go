@@ -13,9 +13,10 @@ import (
 )
 
 type DisplayOptions struct {
-	ShowLines bool
-	ShowWords bool
-	ShowBytes bool
+	ShowHeader bool
+	ShowLines  bool
+	ShowWords  bool
+	ShowBytes  bool
 }
 
 func (d DisplayOptions) IsEmpty() bool {
@@ -36,6 +37,7 @@ func (d DisplayOptions) ShouldShowBytes() bool {
 
 func main() {
 	opts := DisplayOptions{}
+	flag.BoolVar(&opts.ShowHeader, "headers", false, "Show header for each column")
 	flag.BoolVar(&opts.ShowLines, "l", false, "Show line count")
 	flag.BoolVar(&opts.ShowWords, "w", false, "Show word count")
 	flag.BoolVar(&opts.ShowBytes, "c", false, "Show byte count")
@@ -49,6 +51,8 @@ func main() {
 	filenames := flag.Args()
 	total := Counts{}
 	hadErr := false
+
+	PrintHeaders(tw, opts)
 
 	for _, filename := range filenames {
 		counts, err := HandleFileCount(filename)
@@ -85,6 +89,26 @@ func HandleFileCount(filename string) (Counts, error) {
 	defer file.Close()
 
 	return Count(file), nil
+}
+
+func PrintHeaders(w io.Writer, opts DisplayOptions) {
+	if !opts.ShowHeader {
+		return
+	}
+
+	h := []string{}
+	if opts.ShouldShowLines() {
+		h = append(h, "lines")
+	}
+	if opts.ShouldShowWords() {
+		h = append(h, "words")
+	}
+	if opts.ShouldShowBytes() {
+		h = append(h, "bytes")
+	}
+
+	headers := strings.Join(h, "\t") + "\t"
+	fmt.Fprintln(w, headers)
 }
 
 func Print(w io.Writer, c Counts, opts DisplayOptions, suffix ...string) {

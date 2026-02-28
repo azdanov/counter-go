@@ -71,3 +71,61 @@ func TestPrint(t *testing.T) {
 		})
 	}
 }
+
+func TestPrintHeaders(t *testing.T) {
+	tests := []struct {
+		name string
+		opts main.DisplayOptions
+		want string
+	}{
+		{
+			name: "show all headers",
+			opts: main.DisplayOptions{
+				ShowLines:  true,
+				ShowWords:  true,
+				ShowBytes:  true,
+				ShowHeader: true,
+			},
+			want: "lines\twords\tbytes\t\n",
+		},
+		{
+			name: "show only lines and words headers",
+			opts: main.DisplayOptions{
+				ShowLines:  true,
+				ShowWords:  true,
+				ShowBytes:  false,
+				ShowHeader: true,
+			},
+			want: "lines\twords\t\n",
+		},
+		{
+			name: "show only bytes header",
+			opts: main.DisplayOptions{
+				ShowLines:  false,
+				ShowWords:  false,
+				ShowBytes:  true,
+				ShowHeader: true,
+			},
+			want: "bytes\t\n",
+		},
+		{
+			name: "do not show headers",
+			opts: main.DisplayOptions{
+				ShowLines:  true,
+				ShowWords:  true,
+				ShowBytes:  true,
+				ShowHeader: false,
+			},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := bytes.NewBuffer(nil)
+			main.PrintHeaders(w, tt.opts)
+			if got := w.String(); got != tt.want {
+				t.Errorf("PrintHeaders() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
