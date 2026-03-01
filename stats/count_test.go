@@ -85,3 +85,15 @@ func TestCounts_Add(t *testing.T) {
 		})
 	}
 }
+
+var benchData = []io.ReadSeeker{
+	strings.NewReader("hello world\thello world\nhello world\n"),
+	strings.NewReader("привет мир\nпривет мир\nпривет мир"),
+	strings.NewReader(strings.Repeat("hello world ", 1000) + "\n" + strings.Repeat("привет мир ", 1000)),
+}
+
+func BenchmarkCount(b *testing.B) {
+	for i := range b.N {
+		stats.Count(benchData[i%len(benchData)])
+	}
+}
