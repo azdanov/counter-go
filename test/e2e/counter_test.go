@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/azdanov/counter-go/test/e2e/assert"
 )
 
 func TestStdin(t *testing.T) {
@@ -26,9 +28,7 @@ func TestStdin(t *testing.T) {
 	}
 
 	want := " 1 2 14\n"
-	if outBuf.String() != want {
-		t.Fatalf("unexpected: got %q, want %q", outBuf.String(), want)
-	}
+	assert.Equal(t, outBuf.String(), want)
 }
 
 func TestSingleFile(t *testing.T) {
@@ -53,9 +53,7 @@ func TestSingleFile(t *testing.T) {
 	}
 
 	want := fmt.Sprintf(" 1 2 14 %s\n", file.Name())
-	if outBuf.String() != want {
-		t.Fatalf("unexpected: got %q, want %q", outBuf.String(), want)
-	}
+	assert.Equal(t, outBuf.String(), want)
 }
 
 func TestNonExistentFile(t *testing.T) {
@@ -77,19 +75,13 @@ func TestNonExistentFile(t *testing.T) {
 	}
 
 	wantErrMsg := "exit status 1"
-	if err.Error() != wantErrMsg {
-		t.Fatalf("unexpected: got %q, want %q", err.Error(), wantErrMsg)
-	}
+	assert.Equal(t, err.Error(), wantErrMsg)
 
 	wantStdout := ""
-	if outBuf.String() != wantStdout {
-		t.Fatalf("unexpected: got %q, want %q", outBuf.String(), wantStdout)
-	}
+	assert.Equal(t, outBuf.String(), wantStdout)
 
 	wantErr := fmt.Sprintf("%s: open %s: no such file or directory\n", binName, fileName)
-	if !bytes.Contains(errBuf.Bytes(), []byte(wantErr)) {
-		t.Fatalf("unexpected: got %q, want it to contain %q", errBuf.String(), wantErr)
-	}
+	assert.Equal(t, errBuf.String(), wantErr)
 }
 
 func TestFlags(t *testing.T) {
@@ -128,9 +120,7 @@ func TestFlags(t *testing.T) {
 				t.Fatalf("failed to run the test binary: %s: %s", err, errBuf.String())
 			}
 
-			if outBuf.String() != tt.expected {
-				t.Fatalf("unexpected: got %q, want %q", outBuf.String(), tt.expected)
-			}
+			assert.Equal(t, outBuf.String(), tt.expected)
 		})
 	}
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/azdanov/counter-go/display"
 	"github.com/azdanov/counter-go/stats"
+	"github.com/azdanov/counter-go/test/e2e/assert"
 )
 
 func TestPrint(t *testing.T) {
@@ -72,9 +73,7 @@ func TestPrint(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := bytes.NewBuffer(nil)
 			display.Print(w, tt.c, tt.opts, tt.suffix...)
-			if got := w.String(); got != tt.want {
-				t.Errorf("Print() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, w.String(), tt.want)
 		})
 	}
 }
@@ -138,9 +137,7 @@ func TestPrintHeaders(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := bytes.NewBuffer(nil)
 			display.PrintHeaders(w, tt.opts)
-			if got := w.String(); got != tt.want {
-				t.Errorf("PrintHeaders() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, w.String(), tt.want)
 		})
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/azdanov/counter-go/stats"
+	"github.com/azdanov/counter-go/test/e2e/assert"
 )
 
 func TestCount(t *testing.T) {
@@ -43,9 +44,7 @@ func TestCount(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := stats.Count(tt.f)
-			if got != tt.want {
-				t.Errorf("Count() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, got, tt.want)
 		})
 	}
 }
@@ -79,9 +78,7 @@ func TestCounts_Add(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.c.Add(tt.o)
-			if got != tt.want {
-				t.Errorf("Add() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, got, tt.want)
 		})
 	}
 }

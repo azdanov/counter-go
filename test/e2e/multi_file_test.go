@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/azdanov/counter-go/test/e2e/assert"
 )
 
 func TestMultipleFiles(t *testing.T) {
@@ -47,9 +49,5 @@ func TestMultipleFiles(t *testing.T) {
 		fileB.Name(),
 		fileC.Name(),
 	)
-
-	got := stdoutBuf.String()
-	if got != want {
-		t.Fatalf("unexpected: got %q, want %q", got, want)
-	}
+	assert.Equal(t, stdoutBuf.String(), want)
 }
