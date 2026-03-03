@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"strings"
@@ -34,13 +33,9 @@ func TestMultipleFiles(t *testing.T) {
 		t.Fatal("couldn't create command:", err)
 	}
 
-	stdoutBuf := &bytes.Buffer{}
-	cmd.Stdout = stdoutBuf
-	stderrBuf := &bytes.Buffer{}
-	cmd.Stderr = stderrBuf
-
-	if err := cmd.Run(); err != nil {
-		t.Fatalf("failed to run the test binary: %s: %s", err, stderrBuf.String())
+	out, err := cmd.Output()
+	if err != nil {
+		t.Fatalf("failed to run the test binary: %s", err)
 	}
 
 	want := fmt.Sprintf(
@@ -49,5 +44,5 @@ func TestMultipleFiles(t *testing.T) {
 		fileB.Name(),
 		fileC.Name(),
 	)
-	assert.Equal(t, stdoutBuf.String(), want)
+	assert.Equal(t, string(out), want)
 }

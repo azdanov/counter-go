@@ -43,17 +43,13 @@ func TestSingleFile(t *testing.T) {
 		t.Fatal("couldn't create command:", err)
 	}
 
-	outBuf := &bytes.Buffer{}
-	errBuf := &bytes.Buffer{}
-	cmd.Stdout = outBuf
-	cmd.Stderr = errBuf
-
-	if err := cmd.Run(); err != nil {
-		t.Fatalf("failed to run the test binary: %s: %s", err, errBuf.String())
+	out, err := cmd.Output()
+	if err != nil {
+		t.Fatalf("failed to run the test binary: %s", err)
 	}
 
 	want := fmt.Sprintf(" 1 2 14 %s\n", file.Name())
-	assert.Equal(t, outBuf.String(), want)
+	assert.Equal(t, string(out), want)
 }
 
 func TestNonExistentFile(t *testing.T) {
@@ -111,16 +107,12 @@ func TestFlags(t *testing.T) {
 				t.Fatal("couldn't create command:", err)
 			}
 
-			outBuf := &bytes.Buffer{}
-			errBuf := &bytes.Buffer{}
-			cmd.Stdout = outBuf
-			cmd.Stderr = errBuf
-
-			if err := cmd.Run(); err != nil {
-				t.Fatalf("failed to run the test binary: %s: %s", err, errBuf.String())
+			out, err := cmd.Output()
+			if err != nil {
+				t.Fatalf("failed to run the test binary: %s", err)
 			}
 
-			assert.Equal(t, outBuf.String(), tt.expected)
+			assert.Equal(t, string(out), tt.expected)
 		})
 	}
 }
