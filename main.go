@@ -34,6 +34,7 @@ func main() {
 
 	binName := filepath.Base(os.Args[0])
 	filenames := flag.Args()
+	results := make(map[string]FileCounts, len(filenames))
 	total := stats.Counts{}
 	hadErr := false
 
@@ -41,13 +42,18 @@ func main() {
 
 	ch := CountFiles(filenames)
 	for fc := range ch {
+		results[fc.filename] = fc
+		total = total.Add(fc.counts)
+	}
+
+	for _, filename := range filenames {
+		fc := results[filename]
 		if fc.err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %v\n", binName, fc.err)
 			hadErr = true
 			continue
 		}
-		display.Print(tw, fc.counts, do, fc.filename)
-		total = total.Add(fc.counts)
+		display.Print(tw, fc.counts, do, filename)
 	}
 
 	if len(filenames) == 0 {
